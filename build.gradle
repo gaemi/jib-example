@@ -1,45 +1,50 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.8.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'java'
-	id 'com.google.cloud.tools.jib' version '1.6.0'
+    id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+    id 'com.google.cloud.tools.jib' version '1.6.0'
 }
 
 ext {
-	BUILD_VERSION = new Date().format("yyyyMMddHHmmss")
+    BUILD_VERSION = new Date().format("yyyyMMddHHmmss")
 }
 
 group = 'gaemi'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 jib {
-	from {
-		image = "docker://openjdk:8-jre-alpine"
-	}
-	to {
-		image = "gaemi/jib-example-case3"
-		tags = ["${project.version}".toString(), "${BUILD_VERSION}".toString()]
-		credHelper = "pass"
-	}
-	container {
-		mainClass = "gaemi.jib.excample.JibExampleApplication"
-		ports = ["8080"]
-		volumes = ["/tmp"]
-	}
+    from {
+        image = "docker://openjdk:8-jre-alpine"
+    }
+    to {
+        image = "gaemi/jib-example-case3"
+        tags = ["${project.version}".toString(), "${BUILD_VERSION}".toString()]
+        credHelper = "pass"
+    }
+    container {
+        mainClass = "gaemi.jib.excample.JibExampleApplication"
+        ports = ["8080"]
+        volumes = ["/tmp"]
+        environment = [
+                "JAVA_TOOL_OPTIONS": "-Xmx2048m -XX:+UseG1GC",
+                "SPRING_PROFILES_ACTIVE": "dev",
+                "TZ": "Asia/Seoul"
+        ]
+    }
 }
